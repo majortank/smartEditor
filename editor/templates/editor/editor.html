@@ -1,0 +1,17 @@
+{% extends '_base.html' %}
+
+{% block content %}
+<div class="editor-container">
+    <h2>Markdown Editor</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="{{ form.title.id_for_label }}" >Title:</label>
+        {{ form.title }}
+         
+        <label for="{{ form.content.id_for_label }}">Content:</label>
+        {{ form.content }}
+
+        <button type="submit">Preview</button>
+    </form>
+</div>
+{% endblock %}
