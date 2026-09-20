@@ -167,3 +167,6 @@ dist-ssr/
 *.local
 tsconfig.tsbuildinfo
 .vite/
+.next/
+out/
+.netlify/
