@@ -19,16 +19,19 @@ import {
 } from '../utils/converter';
 import { Sparkles, ArrowRightLeft, X } from 'lucide-react';
 
-const STORAGE_KEY = 'smart_editor_documents_v1';
-const ACTIVE_DOC_KEY = 'smart_editor_active_id_v1';
-const THEME_KEY = 'smart_editor_theme_v1';
+const STORAGE_KEY = 'marka_documents_v1';
+const LEGACY_STORAGE_KEY = 'smart_editor_documents_v1';
+const ACTIVE_DOC_KEY = 'marka_active_id_v1';
+const LEGACY_ACTIVE_DOC_KEY = 'smart_editor_active_id_v1';
+const THEME_KEY = 'marka_theme_v1';
+const LEGACY_THEME_KEY = 'smart_editor_theme_v1';
 
 export function EditorApp() {
   const [isClient, setIsClient] = useState(false);
   const [documents, setDocuments] = useState<DocumentItem[]>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem(STORAGE_KEY);
+        const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
         if (saved) {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -52,7 +55,7 @@ export function EditorApp() {
 
   const [activeDocId, setActiveDocId] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      const savedId = localStorage.getItem(ACTIVE_DOC_KEY);
+      const savedId = localStorage.getItem(ACTIVE_DOC_KEY) || localStorage.getItem(LEGACY_ACTIVE_DOC_KEY);
       if (savedId) return savedId;
     }
     return documents[0]?.id || '';
@@ -61,7 +64,7 @@ export function EditorApp() {
   const [viewMode, setViewMode] = useState<ViewMode>('split');
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem(THEME_KEY);
+      const savedTheme = localStorage.getItem(THEME_KEY) || localStorage.getItem(LEGACY_THEME_KEY);
       if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme;
     }
     return 'dark';

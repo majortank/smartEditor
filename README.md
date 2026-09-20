@@ -1,6 +1,6 @@
-# SmartEditor Studio
+# Marka
 
-> **Modern, High-Performance Live Markdown & HTML Documentation Workspace with Real-Time AST Preview & Export Suite**
+> **Modern, High-Performance Live Markdown, HTML Component & Mermaid Studio**
 
 [![Next.js 15](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19-blue.svg)](https://react.dev/)
@@ -9,7 +9,7 @@
 [![Netlify Status](https://img.shields.io/badge/Deploy-Netlify-00C7B7.svg)](https://www.netlify.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**SmartEditor Studio** is a developer-first, distraction-free live documentation environment and web component playground built on **Next.js 15 (App Router)** and **React 19**. It bridges the gap between technical markdown authoring and real-time interactive HTML rendering—featuring synchronized scroll, live syntax highlighting, document metrics, and a complete export suite.
+**Marka** is a developer-first, distraction-free live documentation studio and web component playground built on **Next.js 15 (App Router)** and **React 19**. It bridges the gap between technical markdown authoring and real-time interactive HTML rendering—featuring synchronized scroll, live syntax highlighting, debounced Mermaid diagrams, document metrics, and an isolated export suite.
 
 ---
 
@@ -65,13 +65,14 @@
 ## Architecture & Project Structure
 
 ```
-smartEditor/
+marka/
 ├── src/
 │   ├── app/
 │   │   ├── globals.css          # Tailwind base & prose typography rules
 │   │   ├── layout.tsx           # Next.js root layout with SEO metadata & fonts
 │   │   └── page.tsx             # Entry page with SSR-safe dynamic EditorApp mount
 │   ├── components/
+│   │   ├── Logo.tsx             # Precision geometric Marka monogram vector component
 │   │   ├── EditorApp.tsx        # Root state coordinator & localStorage sync
 │   │   ├── Header.tsx           # Navigation, view switchers, export dropdown, theme
 │   │   ├── Toolbar.tsx          # Quick formatting buttons (H1-H3, code, tables)
@@ -123,7 +124,7 @@ npm start
 
 ## Deploying to Netlify
 
-SmartEditor is configured for 1-click or automated Git-based Netlify deployment via [`netlify.toml`](./netlify.toml):
+Marka is configured for 1-click or automated Git-based Netlify deployment via [`netlify.toml`](./netlify.toml):
 
 1. **Push your code to GitHub**:
    ```bash

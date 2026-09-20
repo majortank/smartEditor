@@ -15,6 +15,7 @@ import {
   Moon,
   ArrowRightLeft
 } from 'lucide-react';
+import { Logo } from './Logo';
 import { EditorMode, ViewMode, Theme } from '../types';
 
 interface HeaderProps {
@@ -85,12 +86,13 @@ export const Header: React.FC<HeaderProps> = ({
           <FolderOpen size={16} />
         </button>
 
-        <div className="flex items-center space-x-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
-            <Sparkles size={14} />
-          </div>
-          <span className="font-extrabold text-sm tracking-tight hidden sm:inline bg-gradient-to-r from-sky-600 to-indigo-600 dark:from-sky-400 dark:to-indigo-400 bg-clip-text text-transparent">
-            SmartEditor
+        <div className="flex items-center space-x-2.5">
+          <Logo size={28} />
+          <span className="font-extrabold text-sm tracking-tight hidden sm:inline bg-gradient-to-r from-sky-500 via-cyan-400 to-indigo-500 bg-clip-text text-transparent">
+            Marka
+          </span>
+          <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20 hidden md:inline">
+            v2
           </span>
         </div>
 

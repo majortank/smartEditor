@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { DocumentItem, TemplateItem } from '../types';
 import { TEMPLATES } from '../templates';
+import { Logo } from './Logo';
 
 interface DocumentSidebarProps {
   isOpen: boolean;
@@ -63,9 +64,9 @@ export const DocumentSidebar: React.FC<DocumentSidebarProps> = ({
       <aside className="fixed inset-y-0 left-0 z-50 w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col transition-all duration-300">
         {/* Sidebar Header */}
         <div className="h-14 px-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Layers size={18} className="text-sky-600 dark:text-sky-400" />
-            <span className="font-bold text-sm text-slate-900 dark:text-slate-200">Workspace Library</span>
+          <div className="flex items-center space-x-2.5">
+            <Logo size={22} />
+            <span className="font-bold text-sm text-slate-900 dark:text-slate-200">Marka Library</span>
           </div>
           <button
             onClick={onClose}

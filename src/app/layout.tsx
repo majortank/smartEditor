@@ -2,11 +2,11 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'SmartEditor Studio — Live Markdown & HTML Documentation Workspace',
+  title: 'Marka — Markdown & Component Studio',
   description:
-    'Modern, high-performance live Markdown & HTML documentation workspace with real-time AST preview, split screen editing, document management, and export suite.',
+    'Modern, high-performance studio for live Markdown documentation, interactive Tailwind HTML components, and real-time Mermaid diagrams.',
   icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230ea5e9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 20h9'/><path d='M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z'/></svg>",
+    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none'><rect width='32' height='32' rx='8' fill='%230f172a'/><path d='M8.5 22V10C8.5 9.17 9.17 8.5 10 8.5C10.5 8.5 10.95 8.75 11.2 9.15L16 16.5L20.8 9.15C21.05 8.75 21.5 8.5 22 8.5C22.83 8.5 23.5 9.17 23.5 10V22' stroke='%2338bdf8' stroke-width='2.75' stroke-linecap='round' stroke-linejoin='round'/><circle cx='16' cy='16.5' r='1.5' fill='%23ffffff'/></svg>",
   },
 };
 

@@ -87,7 +87,7 @@ Submit a compressed batch of telemetric events.
     mode: 'markdown',
     content: `# Mermaid Diagram Gallery & Visual Specifications
 
-This document demonstrates the full breadth of Mermaid diagrams supported natively within SmartEditor with live interactive rendering and automatic theme adaptation.
+This document demonstrates the full breadth of Mermaid diagrams supported natively within Marka with live interactive rendering and automatic theme adaptation.
 
 ---
 
@@ -358,7 +358,7 @@ flowchart LR
 
     <!-- Subtitle -->
     <p class="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed">
-      SmartEditor bridges the gap between technical documentation, interactive Tailwind components, and Mermaid diagrams with zero compilation lag.
+      Marka bridges the gap between technical documentation, interactive Tailwind components, and Mermaid diagrams with zero compilation lag.
     </p>
 
     <!-- CTAs -->
