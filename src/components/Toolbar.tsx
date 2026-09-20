@@ -170,7 +170,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         <button
           onClick={() =>
             onInsertText(
-              '<div class="p-4 rounded-xl border border-sky-200 dark:border-sky-800/70 bg-sky-50 dark:bg-sky-950/40 text-sky-900 dark:text-sky-200 text-xs flex items-center gap-3 mb-4">\n  <span class="text-base">💡</span>\n  <div><strong class="font-bold">Info:</strong> Workspace changes are automatically saved locally.</div>\n</div>\n',
+              '<div class="p-4 rounded-xl border border-sky-200 dark:border-sky-800/70 bg-sky-50 dark:bg-sky-950/40 text-sky-900 dark:text-sky-200 text-xs flex items-center gap-3 mb-4">\n  <svg class="w-4 h-4 shrink-0 text-sky-600 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>\n  <div><strong class="font-bold">Info:</strong> Workspace changes are automatically saved locally.</div>\n</div>\n',
               '',
               ''
             )

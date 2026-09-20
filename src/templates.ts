@@ -212,8 +212,8 @@ classDiagram
 
       <div class="flex items-center justify-between pb-4 border-b border-slate-800">
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-lg">
-            ⚡
+          <div class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
           </div>
           <div>
             <h3 class="text-sm font-bold text-white">Cluster Health Monitor</h3>
@@ -277,8 +277,8 @@ classDiagram
     <!-- Header -->
     <div class="flex items-center justify-between pb-4 border-b border-slate-800">
       <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-lg">
-          🔄
+        <div class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
         </div>
         <div>
           <h3 class="text-base font-bold text-white">Pipeline Execution Graph</h3>
@@ -374,15 +374,24 @@ flowchart LR
     <!-- Feature Pill Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left pt-6 border-t border-slate-800/80">
       <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800/60">
-        <div class="text-sky-400 font-bold text-base mb-1">🔄 Bidirectional</div>
+        <div class="flex items-center gap-2 text-sky-400 font-bold text-base mb-1">
+          <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+          <span>Bidirectional</span>
+        </div>
         <div class="text-xs text-slate-400">Convert Markdown to UI component cards and back losslessly.</div>
       </div>
       <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800/60">
-        <div class="text-sky-400 font-bold text-base mb-1">📊 Live Mermaid</div>
+        <div class="flex items-center gap-2 text-sky-400 font-bold text-base mb-1">
+          <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          <span>Live Mermaid</span>
+        </div>
         <div class="text-xs text-slate-400">Syntax-safe diagram rendering with automatic dark and light theme switching.</div>
       </div>
       <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800/60">
-        <div class="text-sky-400 font-bold text-base mb-1">🖨️ Clean Export</div>
+        <div class="flex items-center gap-2 text-sky-400 font-bold text-base mb-1">
+          <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          <span>Clean Export</span>
+        </div>
         <div class="text-xs text-slate-400">Export standalone HTML or print pristine documents with zero UI artifacts.</div>
       </div>
     </div>
@@ -516,10 +525,10 @@ flowchart LR
           <div class="text-3xl font-black text-white mt-2">$0 <span class="text-xs font-normal text-slate-400">/ month</span></div>
           <p class="text-xs text-slate-400 mt-2">Essential Markdown editing with local storage persistence.</p>
           <ul class="mt-6 space-y-2.5 text-xs text-slate-300">
-            <li class="flex items-center gap-2">✓ Unlimited Local Documents</li>
-            <li class="flex items-center gap-2">✓ Standard Markdown & GFM</li>
-            <li class="flex items-center gap-2">✓ Basic Mermaid Diagramming</li>
-            <li class="flex items-center gap-2 text-slate-500">✗ Automated Cloud Sync</li>
+            <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Unlimited Local Documents</span></li>
+            <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Standard Markdown & GFM</span></li>
+            <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Basic Mermaid Diagramming</span></li>
+            <li class="flex items-center gap-2 text-slate-500"><svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>Automated Cloud Sync</span></li>
           </ul>
         </div>
         <button onclick="alert('Starter plan selected.')" class="mt-8 w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition">
@@ -537,11 +546,11 @@ flowchart LR
           <div class="text-3xl font-black text-white mt-2">$29 <span class="text-xs font-normal text-slate-400">/ month</span></div>
           <p class="text-xs text-slate-400 mt-2">Full bidirectional component compilation and diagram pipeline.</p>
           <ul class="mt-6 space-y-2.5 text-xs text-slate-200">
-            <li class="flex items-center gap-2">✓ Everything in Starter</li>
-            <li class="flex items-center gap-2">✓ Instant Markdown ↔ HTML Component</li>
-            <li class="flex items-center gap-2">✓ Live Debounced Mermaid Suite</li>
-            <li class="flex items-center gap-2">✓ Standalone Styled HTML Export</li>
-            <li class="flex items-center gap-2">✓ Isolated Zero-Artifact Print</li>
+            <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Everything in Starter</span></li>
+            <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Instant Markdown ↔ HTML Component</span></li>
+            <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Live Debounced Mermaid Suite</span></li>
+            <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Standalone Styled HTML Export</span></li>
+            <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Isolated Zero-Artifact Print</span></li>
           </ul>
         </div>
         <button onclick="alert('Upgrading to Professional plan!')" class="mt-8 w-full py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs shadow-lg shadow-sky-500/25 transition active:scale-95">
@@ -556,10 +565,10 @@ flowchart LR
           <div class="text-3xl font-black text-white mt-2">$99 <span class="text-xs font-normal text-slate-400">/ month</span></div>
           <p class="text-xs text-slate-400 mt-2">Dedicated clusters, custom Mermaid styling, and SSO integration.</p>
           <ul class="mt-6 space-y-2.5 text-xs text-slate-300">
-            <li class="flex items-center gap-2">✓ Everything in Pro</li>
-            <li class="flex items-center gap-2">✓ SAML SSO & Okta Integration</li>
-            <li class="flex items-center gap-2">✓ Dedicated RingBuffer Gateway</li>
-            <li class="flex items-center gap-2">✓ 99.999% SLA & 24/7 Phone Support</li>
+            <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Everything in Pro</span></li>
+            <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>SAML SSO & Okta Integration</span></li>
+            <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Dedicated RingBuffer Gateway</span></li>
+            <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>99.999% SLA & 24/7 Phone Support</span></li>
           </ul>
         </div>
         <button onclick="alert('Contacting Enterprise sales team...')" class="mt-8 w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition">

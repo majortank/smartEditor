@@ -1,4 +1,4 @@
-# 📝 SmartEditor Studio
+# SmartEditor Studio
 
 > **Modern, High-Performance Live Markdown & HTML Documentation Workspace with Real-Time AST Preview & Export Suite**
 
@@ -13,49 +13,56 @@
 
 ---
 
-## ⚡ Core Features
+## Core Features
 
-- 📑 **Dual-Pane Synchronized Workspace**:
+- **Dual-Pane Synchronized Workspace**:
   - **Live AST Parsing**: Instant reactive rendering using `marked` and sanitized via `DOMPurify`.
   - **Bidirectional Scroll Sync**: The preview pane follows editor navigation proportionally.
   - **View Modes**: Switch between **Split Screen**, **Editor Only** (focus mode), or **Preview Only**.
 
-- 🎨 **Dual-Mode Engine (Markdown + HTML Component)**:
-  - **Markdown Mode**: Full GitHub Flavored Markdown (GFM) support with tables, checklists, strikethrough, blockquotes, and code fences.
+- **Dual-Mode Engine (Markdown + HTML Component)**:
+  - **Markdown Mode**: Full GitHub Flavored Markdown (GFM) support with tables, checklists, strikethrough, blockquotes, code fences, and debounced Mermaid diagrams.
   - **HTML Component Mode**: Live sandboxed iframe preview with responsive viewport switching:
-    - 🖥️ **Desktop** (Full width)
-    - 📱 **Tablet** (768px container)
-    - 📲 **Mobile** (375px phone container)
+    - **Desktop** (Full width)
+    - **Tablet** (768px container)
+    - **Mobile** (375px phone container)
+  - **Bidirectional Transformation**: 1-click lossless conversion between Markdown documents and interactive Tailwind UI component cards.
 
-- 🛠️ **Developer Productivity & Formatting Bar**:
+- **Developer Productivity & Formatting Bar**:
   - Headings (H1–H3), bold, italic, strikethrough, blockquotes.
   - Inline code and language-specific code blocks.
   - Auto-pairing of brackets `()`, brackets `[]`, braces `{}`, quotes `""`, and backticks ` `` `.
-  - Tab indentation preservation (2-space soft tabs) and standard keyboard shortcuts (`Ctrl+B`, `Ctrl+I`, `Ctrl+K`, `Ctrl+S`).
-  - Pre-built table and Mermaid diagram insertion.
+  - Tab indentation preservation (2-space soft tabs) and standard keyboard shortcuts (`Ctrl+B`, `Ctrl+I`, `Ctrl+K`, `Ctrl+S`, `Ctrl+P`).
+  - Pre-built table, Mermaid diagram, metric card, and form component insertion.
 
-- 🗄️ **Document Management & Persistence**:
+- **Document Management & Persistence**:
   - Multi-document library stored persistently in browser `localStorage`.
   - Document duplication, deletion, and quick renaming.
-  - Built-in engineering templates:
+  - Built-in engineering templates with category discovery:
     - **Engineering RFC / Technical Specification** (Architecture, SLAs, Data Models)
-    - **REST API Reference** (Endpoints, Auth, Request/Response payloads)
-    - **Interactive HTML Component** (Glassmorphic card with metric bars)
+    - **Mermaid Diagram Gallery** (Flowchart, Sequence, State, Class diagrams)
+    - **Interactive Metric Dashboard** (Glassmorphic card with metric bars)
+    - **Live Embedded Mermaid Card** (HTML card with live pipeline graph)
+    - **SaaS Product Hero Banner** (Spotlight blur and feature grid)
+    - **Settings & Profile Panel** (Form inputs, switches, API key)
+    - **SaaS Pricing Matrix** (3-tier comparison with feature checklists)
+    - **REST API Reference & Webhooks** (Endpoints, schemas, sequence flow)
+    - **Sprint Kanban & Roadmap** (Release pipeline and milestone velocity)
 
-- 📊 **Real-Time Document Analytics**:
+- **Real-Time Document Analytics**:
   - Live Word Count, Character Count, and Line Count.
   - Estimated Reading Time calculation (based on standard 200 WPM).
   - Automated Readability Ease scoring (Flesch-Kincaid heuristic metric).
 
-- 📤 **Complete Export Suite**:
+- **Complete Export Suite**:
   - **Markdown Export**: Download as `.md` file.
-  - **Standalone HTML Export**: Download self-contained `.html` document with embedded typography styles.
-  - **Print / PDF Ready**: Dedicated `@media print` CSS stylesheet for printing to PDF.
+  - **Standalone HTML Export**: Download self-contained `.html` document with embedded typography styles and Mermaid CDN.
+  - **Print / PDF Ready**: Dedicated isolated iframe print dialog that prints document content and styling only with zero application UI artifacts.
   - **1-Click Clipboard Copy**: Instantly copy raw Markdown or compiled HTML.
 
 ---
 
-## 🏗️ Architecture & Project Structure
+## Architecture & Project Structure
 
 ```
 smartEditor/
@@ -74,6 +81,7 @@ smartEditor/
 │   │   └── StatsFooter.tsx      # Real-time metrics bar (words, chars, reading ease)
 │   ├── utils/
 │   │   ├── markdown.ts          # Marked parser & DOMPurify sanitizer (SSR-safe)
+│   │   ├── converter.ts         # Bidirectional Markdown <-> HTML converter
 │   │   ├── exporter.ts          # File downloader (MD/HTML/Print)
 │   │   └── statistics.ts        # Reading time & readability ease algorithms
 │   ├── templates.ts             # Built-in RFC, API, and UI component templates
@@ -89,7 +97,7 @@ smartEditor/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js 18+ (tested on Node 26.x)
@@ -113,7 +121,7 @@ npm start
 
 ---
 
-## 🌐 Deploying to Netlify
+## Deploying to Netlify
 
 SmartEditor is configured for 1-click or automated Git-based Netlify deployment via [`netlify.toml`](./netlify.toml):
 
@@ -135,7 +143,7 @@ SmartEditor is configured for 1-click or automated Git-based Netlify deployment 
 
 ---
 
-## ⌨️ Keyboard Shortcuts
+## Keyboard Shortcuts
 
 | Shortcut | Action |
 | :--- | :--- |
@@ -143,17 +151,18 @@ SmartEditor is configured for 1-click or automated Git-based Netlify deployment 
 | `Ctrl + I` / `Cmd + I` | Wrap selection in *Italic* |
 | `Ctrl + K` / `Cmd + K` | Insert Markdown [Link](url) |
 | `Ctrl + S` / `Cmd + S` | Trigger Save confirmation toast |
+| `Ctrl + P` / `Cmd + P` | Trigger Clean Document Print (content only) |
 | `Tab` | Indent with 2 spaces |
 
 ---
 
-## 👤 Author
+## Author
 
 **Thabo Tankiso Thebe**
 - Portfolio: [majortank.space](https://majortank.space)
 - GitHub: [@majortank](https://github.com/majortank)
 - LinkedIn: [@thabotankisothebe](https://linkedin.com/in/thabotankisothebe)
 
-## 📄 License
+## License
 
 Distributed under the MIT License. See `LICENSE` for details.

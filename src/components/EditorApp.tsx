@@ -308,7 +308,7 @@ export function EditorApp() {
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-12 right-6 z-50 bg-sky-500 text-slate-950 px-4 py-2 rounded-xl text-xs font-bold shadow-2xl animate-fade-in flex items-center gap-2">
-          <span>✨</span>
+          <Sparkles size={14} className="text-slate-950 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
