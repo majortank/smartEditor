@@ -30,6 +30,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { EditorMode } from '../types';
+import { MermaidDropdown } from './MermaidDropdown';
 
 interface ToolbarProps {
   mode: EditorMode;
@@ -122,20 +123,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <span className="hidden sm:inline text-[11px]">Grid</span>
         </button>
 
-        <button
-          onClick={() =>
-            onInsertText(
-              '<div class="mermaid my-6 flex justify-center p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800/80 overflow-x-auto">\nflowchart TD\n  A[Client Request] --> B[API Gateway]\n  B --> C[Microservice]\n  C --> D[(Database)]\n</div>\n',
-              '',
-              ''
-            )
-          }
-          title="Insert Mermaid Diagram Container"
-          className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition hover:text-sky-600 dark:hover:text-sky-400 flex items-center gap-1 font-medium"
-        >
-          <GitBranch size={14} />
-          <span className="hidden sm:inline text-[11px]">Mermaid</span>
-        </button>
+        <MermaidDropdown mode="html" onInsertText={onInsertText} />
 
         <button
           onClick={() =>
@@ -378,17 +366,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       >
         <Table size={15} />
       </button>
-      <button
-        onClick={() => onInsertText(
-          '```mermaid\nflowchart TD\n    A[Start] --> B{Valid?}\n    B -->|Yes| C[Proceed]\n    B -->|No| D[Retry]\n```\n',
-          '',
-          ''
-        )}
-        title="Insert Mermaid Diagram"
-        className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition hover:text-sky-600 dark:hover:text-sky-400"
-      >
-        <GitBranch size={15} />
-      </button>
+      <MermaidDropdown mode="markdown" onInsertText={onInsertText} />
       <button
         onClick={() => onInsertText('\n---\n\n', '', '')}
         title="Horizontal Rule"

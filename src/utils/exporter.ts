@@ -87,7 +87,16 @@ export function exportAsStandaloneHtml(
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title || 'Document'}</title>
   <script src="https://cdn.tailwindcss.com?plugins=typography,forms,aspect-ratio"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.min.js"></script>
+  <script type="module">
+    try {
+      const { default: zenuml } = await import('https://cdn.jsdelivr.net/npm/@mermaid-js/mermaid-zenuml/dist/mermaid-zenuml.esm.min.mjs');
+      if (typeof mermaid !== 'undefined' && zenuml) {
+        await mermaid.registerExternalDiagrams([zenuml]);
+        mermaid.run({ querySelector: '.mermaid', suppressErrors: true });
+      }
+    } catch (e) {}
+  </script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -212,7 +221,16 @@ export function printDocument(
   <title>${title || 'Document'}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com?plugins=typography,forms,aspect-ratio"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.min.js"></script>
+  <script type="module">
+    try {
+      const { default: zenuml } = await import('https://cdn.jsdelivr.net/npm/@mermaid-js/mermaid-zenuml/dist/mermaid-zenuml.esm.min.mjs');
+      if (typeof mermaid !== 'undefined' && zenuml) {
+        await mermaid.registerExternalDiagrams([zenuml]);
+        mermaid.run({ querySelector: '.mermaid', suppressErrors: true });
+      }
+    } catch (e) {}
+  </script>
   <script>
     if (typeof mermaid !== 'undefined') {
       mermaid.initialize({

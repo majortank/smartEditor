@@ -1,6 +1,7 @@
 import { TemplateItem } from './types';
+import { MERMAID_SNIPPETS } from './data/mermaidSnippets';
 
-export const TEMPLATES: TemplateItem[] = [
+const CORE_TEMPLATES: TemplateItem[] = [
   {
     id: 'tech-spec',
     name: 'Engineering RFC / Spec',
@@ -729,4 +730,38 @@ flowchart TD
 | **General Availability GA**| Day 10 | Scheduled | Core Team |
 `
   }
+];
+
+const DIAGRAM_TEMPLATES: TemplateItem[] = MERMAID_SNIPPETS.map((snippet) => ({
+  id: `diagram-${snippet.id}`,
+  name: `${snippet.name}`,
+  description: snippet.description,
+  category: 'Diagrams',
+  mode: 'markdown',
+  content: `# ${snippet.name} Specification
+
+> **Category**: ${snippet.category}  
+> **Syntax Key**: \`${snippet.syntaxKey}\`  
+
+---
+
+## 1. Visual Diagram
+
+\`\`\`mermaid
+${snippet.code}
+\`\`\`
+
+---
+
+## 2. Technical Notes & Implementation Guidance
+
+- **Diagram Type**: \`${snippet.syntaxKey}\`
+- **Primary Use Case**: ${snippet.description}
+- **Theme Adaptivity**: Renders dynamically in both dark and light themes with live debounced preview.
+`
+}));
+
+export const TEMPLATES: TemplateItem[] = [
+  ...CORE_TEMPLATES,
+  ...DIAGRAM_TEMPLATES,
 ];

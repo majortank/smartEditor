@@ -62,9 +62,20 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
     let isCancelled = false;
 
     const timer = setTimeout(() => {
-      import('mermaid')
-        .then(async ({ default: mermaid }) => {
+      Promise.all([
+        import('mermaid'),
+        import('@mermaid-js/mermaid-zenuml').catch(() => null)
+      ])
+        .then(async ([{ default: mermaid }, zenumlModule]) => {
           if (isCancelled) return;
+
+          if (zenumlModule && (zenumlModule.default || zenumlModule)) {
+            try {
+              await mermaid.registerExternalDiagrams([zenumlModule.default || zenumlModule]);
+            } catch {
+              // ignore if already registered
+            }
+          }
 
           mermaid.initialize({
             startOnLoad: false,
