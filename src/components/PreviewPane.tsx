@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { Monitor, Tablet, Smartphone, RotateCcw, Sparkles } from 'lucide-react';
 import { EditorMode, DeviceViewport, Theme } from '../types';
 import { renderMarkdown } from '../utils/markdown';
+import { renderDiagramCode, getCachedSvg } from '../utils/mermaidRenderer';
 import { isHtmlContent, markdownToHtmlComponent, wrapHtmlComponentForPreview } from '../utils/converter';
 
 interface PreviewPaneProps {
@@ -24,6 +25,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [viewport, setViewport] = useState<DeviceViewport>('desktop');
   const [iframeKey, setIframeKey] = useState(0);
+  const [cacheVersion, setCacheVersion] = useState(0);
 
   // Sync scroll from editor
   useEffect(() => {
@@ -43,97 +45,98 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
       return wrapHtmlComponentForPreview(content, theme);
     }
     // Auto-convert Markdown content to an interactive HTML Component for live preview
-    const compiled = markdownToHtmlComponent(content, 'component');
+    const compiled = markdownToHtmlComponent(content, 'component', theme);
     return wrapHtmlComponentForPreview(compiled, theme);
   }, [content, mode, theme, isContentHtml]);
 
   // Memoize rendered HTML for Markdown mode
   const renderedHtml = useMemo(() => {
-    return mode === 'markdown' ? renderMarkdown(content) : '';
-  }, [content, mode]);
+    return mode === 'markdown' ? renderMarkdown(content, theme) : '';
+  }, [content, mode, theme, cacheVersion]);
 
-  // Dynamically render Mermaid diagrams in Markdown preview with debounce & syntax safety
+  // Dynamically render pending Mermaid diagrams with debounce & syntax safety
   useEffect(() => {
     if (mode !== 'markdown' || !containerRef.current) return;
 
-    const mermaidNodes = containerRef.current.querySelectorAll<HTMLElement>('.mermaid');
-    if (mermaidNodes.length === 0) return;
+    // Fast check if any pending diagrams exist
+    const pendingNodes = containerRef.current.querySelectorAll<HTMLElement>(
+      '.mermaid[data-mermaid-status="pending"]'
+    );
+    if (pendingNodes.length === 0) return;
 
     let isCancelled = false;
 
-    const timer = setTimeout(() => {
-      Promise.all([
-        import('mermaid'),
-        import('@mermaid-js/mermaid-zenuml').catch(() => null)
-      ])
-        .then(async ([{ default: mermaid }, zenumlModule]) => {
-          if (isCancelled) return;
+    const timer = setTimeout(async () => {
+      if (isCancelled || !containerRef.current) return;
 
-          if (zenumlModule && (zenumlModule.default || zenumlModule)) {
-            try {
-              await mermaid.registerExternalDiagrams([zenumlModule.default || zenumlModule]);
-            } catch {
-              // ignore if already registered
-            }
+      // Re-query current pending nodes from DOM to ensure elements are currently connected
+      const currentNodes = Array.from(
+        containerRef.current.querySelectorAll<HTMLElement>(
+          '.mermaid[data-mermaid-status="pending"]'
+        )
+      );
+
+      if (currentNodes.length === 0) return;
+
+      let renderedAny = false;
+
+      for (let i = 0; i < currentNodes.length; i++) {
+        if (isCancelled) break;
+        const node = currentNodes[i];
+        if (!node.isConnected) continue;
+
+        let rawCode = '';
+        if (node.dataset.mermaidCode) {
+          try {
+            rawCode = decodeURIComponent(node.dataset.mermaidCode);
+          } catch {
+            rawCode = node.dataset.mermaidCode;
           }
+        }
+        if (!rawCode) {
+          rawCode = (node.textContent || '').trim();
+        }
+        rawCode = rawCode.trim();
+        if (!rawCode) continue;
 
-          mermaid.initialize({
-            startOnLoad: false,
-            theme: theme === 'dark' ? 'dark' : 'default',
-            securityLevel: 'loose',
-            fontFamily: 'Inter, system-ui, sans-serif',
-          });
+        // Check if cached already
+        const cached = getCachedSvg(rawCode, theme);
+        if (cached) {
+          node.innerHTML = cached;
+          node.setAttribute('data-mermaid-status', 'rendered');
+          renderedAny = true;
+          continue;
+        }
 
-          // Helper to remove any orphan error elements Mermaid may append to document.body
-          const cleanOrphanErrorNodes = () => {
-            if (typeof document === 'undefined') return;
-            document.querySelectorAll('body > [id^="dmermaid-"], body > [id^="mermaid-"]').forEach(el => el.remove());
-          };
+        const result = await renderDiagramCode(rawCode, theme);
 
-          for (let index = 0; index < mermaidNodes.length; index++) {
-            if (isCancelled) break;
-            const node = mermaidNodes[index];
+        if (isCancelled || !node.isConnected) continue;
 
-            // Cache original raw code in dataset so subsequent theme changes or renders have clean code
-            if (!node.dataset.mermaidCode) {
-              node.dataset.mermaidCode = node.textContent || '';
-            }
-            const code = (node.dataset.mermaidCode || '').trim();
-            if (!code) continue;
+        if (result.svg) {
+          node.innerHTML = result.svg;
+          node.setAttribute('data-mermaid-status', 'rendered');
+          renderedAny = true;
+        } else if (result.error) {
+          node.setAttribute('data-mermaid-status', 'error');
+          node.innerHTML = `
+            <div class="w-full text-left font-mono text-xs text-amber-600 dark:text-amber-400 p-4 bg-amber-50/80 dark:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-800/60 shadow-sm">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-1.5 font-bold text-amber-800 dark:text-amber-300">
+                  <span class="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                  <span>Mermaid Diagram (Editing...)</span>
+                </div>
+                <span class="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300">Syntax Incomplete</span>
+              </div>
+              <pre class="bg-transparent p-0 text-xs overflow-x-auto whitespace-pre font-mono text-slate-700 dark:text-slate-300">${rawCode}</pre>
+            </div>
+          `;
+        }
+      }
 
-            const uniqueId = `mermaid-svg-${index}-${Date.now()}`;
-
-            try {
-              // Validate syntax with mermaid.parse before render to avoid DOM error nodes
-              await mermaid.parse(code);
-              const { svg } = await mermaid.render(uniqueId, code);
-              cleanOrphanErrorNodes();
-              if (!isCancelled && node) {
-                node.innerHTML = svg;
-              }
-            } catch {
-              cleanOrphanErrorNodes();
-              if (!isCancelled && node) {
-                node.innerHTML = `
-                  <div class="w-full text-left font-mono text-xs text-amber-600 dark:text-amber-400 p-4 bg-amber-50/80 dark:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-800/60 shadow-sm">
-                    <div class="flex items-center justify-between mb-2">
-                      <div class="flex items-center gap-1.5 font-bold text-amber-800 dark:text-amber-300">
-                        <span class="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                        <span>Mermaid Diagram (Editing...)</span>
-                      </div>
-                      <span class="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300">Syntax Incomplete</span>
-                    </div>
-                    <pre class="bg-transparent p-0 text-xs overflow-x-auto whitespace-pre font-mono text-slate-700 dark:text-slate-300">${code}</pre>
-                  </div>
-                `;
-              }
-            }
-          }
-        })
-        .catch(err => {
-          console.error('Failed to load mermaid in preview:', err);
-        });
-    }, 120);
+      if (renderedAny && !isCancelled) {
+        setCacheVersion((v) => v + 1);
+      }
+    }, 100);
 
     return () => {
       isCancelled = true;

@@ -139,10 +139,10 @@ export function EditorApp() {
   // Convert current markdown content into an HTML component
   const handleConvertToHtmlComponent = useCallback((variant: 'component' | 'semantic' = 'component') => {
     if (!activeDoc) return;
-    const converted = markdownToHtmlComponent(activeDoc.content, variant);
+    const converted = markdownToHtmlComponent(activeDoc.content, variant, theme);
     updateActiveDoc({ content: converted, mode: 'html' });
     showToast(`Converted to HTML ${variant === 'component' ? 'Component Card' : 'Semantic Markup'}`);
-  }, [activeDoc, updateActiveDoc, showToast]);
+  }, [activeDoc, updateActiveDoc, showToast, theme]);
 
   // Convert current HTML content into clean markdown
   const handleConvertToMarkdown = useCallback(() => {

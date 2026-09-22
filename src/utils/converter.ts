@@ -1,4 +1,5 @@
 import { renderMarkdown } from './markdown';
+import { Theme } from '../types';
 
 /**
  * Checks whether content looks predominantly like HTML or Markdown
@@ -6,7 +7,38 @@ import { renderMarkdown } from './markdown';
 export function isHtmlContent(content: string): boolean {
   const trimmed = content.trim();
   if (!trimmed) return false;
-  return /^<!DOCTYPE/i.test(trimmed) || /^<html/i.test(trimmed) || /^<div/i.test(trimmed) || /<[a-z][\s\S]*>/i.test(trimmed);
+
+  // Obvious HTML doctype or root tags
+  if (/^<!DOCTYPE/i.test(trimmed) || /^<html[\s>]/i.test(trimmed)) return true;
+
+  // Check if content starts with a block-level HTML tag
+  const startsWithBlockHtml = /^<(div|section|main|article|header|footer|nav|table|p|ul|ol|h[1-6])[\s>]/i.test(trimmed);
+
+  // Check for common Markdown syntax patterns
+  const hasMarkdownHeadings = /(^|\n)#{1,6}\s+\S+/m.test(trimmed);
+  const hasMarkdownFences = /(^|\n)```\w*/m.test(trimmed);
+  const hasMarkdownQuotes = /(^|\n)>\s+\S+/m.test(trimmed);
+  const hasMarkdownLists = /(^|\n)(\*|-|\d+\.)\s+\S+/m.test(trimmed);
+
+  const markdownScore =
+    (hasMarkdownHeadings ? 2 : 0) +
+    (hasMarkdownFences ? 2 : 0) +
+    (hasMarkdownQuotes ? 1 : 0) +
+    (hasMarkdownLists ? 1 : 0);
+
+  if (markdownScore >= 2 && !startsWithBlockHtml) {
+    return false;
+  }
+
+  // Count closing HTML tags vs markdown structures
+  const htmlTagMatches = trimmed.match(/<\/(div|p|span|section|article|table|h[1-6]|ul|ol|li|main|header)>/gi);
+  const htmlTagCount = htmlTagMatches ? htmlTagMatches.length : 0;
+
+  if (startsWithBlockHtml && htmlTagCount > 0 && markdownScore < 3) {
+    return true;
+  }
+
+  return htmlTagCount > 3 && htmlTagCount > markdownScore;
 }
 
 /**
@@ -17,11 +49,12 @@ export function isHtmlContent(content: string): boolean {
  */
 export function markdownToHtmlComponent(
   markdown: string,
-  variant: 'component' | 'semantic' = 'component'
+  variant: 'component' | 'semantic' = 'component',
+  theme: Theme = 'dark'
 ): string {
   if (!markdown || !markdown.trim()) return '';
 
-  const sanitized = renderMarkdown(markdown);
+  const sanitized = renderMarkdown(markdown, theme);
 
   if (variant === 'semantic') {
     return sanitized.trim();
@@ -67,7 +100,15 @@ export function htmlToMarkdown(html: string): string {
 
       // Handle Mermaid diagram containers
       if (el.classList && el.classList.contains('mermaid')) {
-        const rawCode = el.getAttribute('data-mermaid-code') || el.textContent || '';
+        let rawCode = el.getAttribute('data-mermaid-code') || '';
+        if (rawCode) {
+          try {
+            rawCode = decodeURIComponent(rawCode);
+          } catch {}
+        }
+        if (!rawCode) {
+          rawCode = el.textContent || '';
+        }
         return `\n\`\`\`mermaid\n${rawCode.trim()}\n\`\`\`\n\n`;
       }
 
@@ -227,28 +268,10 @@ export function wrapHtmlComponentForPreview(
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com?plugins=typography,forms,aspect-ratio"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.min.js"></script>
-  <script type="module">
-    try {
-      const { default: zenuml } = await import('https://cdn.jsdelivr.net/npm/@mermaid-js/mermaid-zenuml/dist/mermaid-zenuml.esm.min.mjs');
-      if (typeof mermaid !== 'undefined' && zenuml) {
-        await mermaid.registerExternalDiagrams([zenuml]);
-        mermaid.run({ querySelector: '.mermaid', suppressErrors: true });
-      }
-    } catch (e) {}
-  </script>
   <script>
     tailwind.config = {
       darkMode: 'class',
     };
-    if (typeof mermaid !== 'undefined') {
-      mermaid.initialize({
-        startOnLoad: true,
-        theme: '${theme === 'dark' ? 'dark' : 'default'}',
-        securityLevel: 'loose',
-        fontFamily: 'Inter, system-ui, sans-serif',
-      });
-    }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -366,46 +389,97 @@ export function wrapHtmlComponentForPreview(
   <div id="component-root" class="w-full max-w-4xl mx-auto">
     ${content}
   </div>
-  <script id="mermaid-script" src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-  <script>
-    function runMermaid() {
-      if (typeof mermaid === 'undefined') return;
+  <script id="mermaid-script" src="https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.min.js"></script>
+  <script type="module">
+    async function initAndRunMermaid() {
+      function getMermaid() {
+        return typeof mermaid !== 'undefined' ? mermaid : window.mermaid;
+      }
+
+      let m = getMermaid();
+      if (!m) {
+        await new Promise((resolve) => {
+          const s = document.getElementById('mermaid-script') || document.querySelector('script[src*="mermaid"]');
+          if (s) {
+            s.addEventListener('load', resolve, { once: true });
+            s.addEventListener('error', resolve, { once: true });
+          }
+          setTimeout(resolve, 300);
+        });
+        m = getMermaid();
+      }
+
+      if (!m) return;
+
       try {
-        mermaid.initialize({
+        m.initialize({
           startOnLoad: false,
           theme: '${theme === 'dark' ? 'dark' : 'default'}',
           securityLevel: 'loose',
           fontFamily: 'Inter, system-ui, sans-serif',
         });
+
+        try {
+          const { default: zenuml } = await import('https://cdn.jsdelivr.net/npm/@mermaid-js/mermaid-zenuml/dist/mermaid-zenuml.esm.min.mjs');
+          if (zenuml) {
+            await m.registerExternalDiagrams([zenuml]);
+          }
+        } catch (e) {}
+
+        // Convert pre code blocks if any
         document.querySelectorAll('pre code.language-mermaid, pre.mermaid').forEach(function(el) {
           var div = document.createElement('div');
           div.className = 'mermaid my-6 flex justify-center p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800/80 overflow-x-auto select-none';
-          var code = el.textContent || '';
+          var code = (el.textContent || '').trim();
           div.textContent = code;
-          div.setAttribute('data-mermaid-code', code);
+          div.setAttribute('data-mermaid-code', encodeURIComponent(code));
           (el.closest('pre') || el).replaceWith(div);
         });
+
+        // Filter out already-rendered diagrams
+        var nodesToRender = [];
         document.querySelectorAll('.mermaid').forEach(function(el) {
-          if (!el.getAttribute('data-mermaid-code')) {
-            el.setAttribute('data-mermaid-code', el.textContent || '');
+          if (el.querySelector('svg') || el.getAttribute('data-mermaid-status') === 'rendered') {
+            return;
+          }
+
+          var raw = el.getAttribute('data-mermaid-code');
+          if (raw) {
+            try {
+              raw = decodeURIComponent(raw);
+            } catch (e) {}
+          } else {
+            raw = el.textContent || '';
+          }
+          raw = (raw || '').trim();
+
+          if (raw && !raw.startsWith('<svg') && !raw.includes('Rendering Diagram...')) {
+            el.textContent = raw;
+            if (!el.getAttribute('data-mermaid-code')) {
+              el.setAttribute('data-mermaid-code', encodeURIComponent(raw));
+            }
+            nodesToRender.push(el);
           }
         });
-        mermaid.run({ querySelector: '.mermaid', suppressErrors: true });
+
+        if (nodesToRender.length > 0) {
+          await m.run({ nodes: nodesToRender, suppressErrors: true });
+          nodesToRender.forEach(function(el) {
+            if (el.querySelector('svg')) {
+              el.setAttribute('data-mermaid-status', 'rendered');
+            }
+          });
+        }
       } catch (e) {
         console.warn('Mermaid rendering error:', e);
       }
     }
-    var mScript = document.getElementById('mermaid-script');
-    if (mScript) {
-      mScript.addEventListener('load', runMermaid);
-    }
+
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', runMermaid);
+      document.addEventListener('DOMContentLoaded', initAndRunMermaid);
     } else {
-      runMermaid();
+      initAndRunMermaid();
     }
-    setTimeout(runMermaid, 50);
-    setTimeout(runMermaid, 250);
   </script>
 </body>
 </html>`;

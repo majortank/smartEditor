@@ -18,6 +18,101 @@ function sanitizeFilename(title: string): string {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'document';
 }
 
+function getMermaidScriptSnippet(theme: Theme = 'light'): string {
+  return `  <script id="mermaid-script" src="https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.min.js"></script>
+  <script type="module">
+    async function initAndRunMermaid() {
+      function getMermaid() {
+        return typeof mermaid !== 'undefined' ? mermaid : window.mermaid;
+      }
+
+      let m = getMermaid();
+      if (!m) {
+        await new Promise((resolve) => {
+          const s = document.getElementById('mermaid-script') || document.querySelector('script[src*="mermaid"]');
+          if (s) {
+            s.addEventListener('load', resolve, { once: true });
+            s.addEventListener('error', resolve, { once: true });
+          }
+          setTimeout(resolve, 300);
+        });
+        m = getMermaid();
+      }
+
+      if (!m) return;
+
+      try {
+        m.initialize({
+          startOnLoad: false,
+          theme: '${theme === 'dark' ? 'dark' : 'default'}',
+          securityLevel: 'loose',
+          fontFamily: 'Inter, system-ui, sans-serif',
+        });
+
+        try {
+          const { default: zenuml } = await import('https://cdn.jsdelivr.net/npm/@mermaid-js/mermaid-zenuml/dist/mermaid-zenuml.esm.min.mjs');
+          if (zenuml) {
+            await m.registerExternalDiagrams([zenuml]);
+          }
+        } catch (e) {}
+
+        // Convert pre code blocks if any
+        document.querySelectorAll('pre code.language-mermaid, pre.mermaid').forEach(function(el) {
+          var div = document.createElement('div');
+          div.className = 'mermaid my-6 flex justify-center p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800/80 overflow-x-auto select-none';
+          var code = (el.textContent || '').trim();
+          div.textContent = code;
+          div.setAttribute('data-mermaid-code', encodeURIComponent(code));
+          (el.closest('pre') || el).replaceWith(div);
+        });
+
+        // Filter out already-rendered diagrams
+        var nodesToRender = [];
+        document.querySelectorAll('.mermaid').forEach(function(el) {
+          if (el.querySelector('svg') || el.getAttribute('data-mermaid-status') === 'rendered') {
+            return;
+          }
+
+          var raw = el.getAttribute('data-mermaid-code');
+          if (raw) {
+            try {
+              raw = decodeURIComponent(raw);
+            } catch (e) {}
+          } else {
+            raw = el.textContent || '';
+          }
+          raw = (raw || '').trim();
+
+          if (raw && !raw.startsWith('<svg') && !raw.includes('Rendering Diagram...')) {
+            el.textContent = raw;
+            if (!el.getAttribute('data-mermaid-code')) {
+              el.setAttribute('data-mermaid-code', encodeURIComponent(raw));
+            }
+            nodesToRender.push(el);
+          }
+        });
+
+        if (nodesToRender.length > 0) {
+          await m.run({ nodes: nodesToRender, suppressErrors: true });
+          nodesToRender.forEach(function(el) {
+            if (el.querySelector('svg')) {
+              el.setAttribute('data-mermaid-status', 'rendered');
+            }
+          });
+        }
+      } catch (e) {
+        console.warn('Mermaid execution error:', e);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAndRunMermaid);
+    } else {
+      initAndRunMermaid();
+    }
+  </script>`;
+}
+
 /**
  * Export as Markdown (.md). If document is in HTML mode, converts HTML to Markdown.
  */
@@ -73,7 +168,7 @@ export function exportAsStandaloneHtml(
 
   const renderedContent = mode === 'html'
     ? content
-    : renderMarkdown(content);
+    : renderMarkdown(content, theme);
 
   const bgColor = theme === 'dark' ? '#090d16' : '#ffffff';
   const textColor = theme === 'dark' ? '#f8fafc' : '#0f172a';
@@ -87,28 +182,10 @@ export function exportAsStandaloneHtml(
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title || 'Document'}</title>
   <script src="https://cdn.tailwindcss.com?plugins=typography,forms,aspect-ratio"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.min.js"></script>
-  <script type="module">
-    try {
-      const { default: zenuml } = await import('https://cdn.jsdelivr.net/npm/@mermaid-js/mermaid-zenuml/dist/mermaid-zenuml.esm.min.mjs');
-      if (typeof mermaid !== 'undefined' && zenuml) {
-        await mermaid.registerExternalDiagrams([zenuml]);
-        mermaid.run({ querySelector: '.mermaid', suppressErrors: true });
-      }
-    } catch (e) {}
-  </script>
   <script>
     tailwind.config = {
       darkMode: 'class',
     };
-    if (typeof mermaid !== 'undefined') {
-      mermaid.initialize({
-        startOnLoad: true,
-        theme: '${theme === 'dark' ? 'dark' : 'default'}',
-        securityLevel: 'loose',
-        fontFamily: 'Inter, system-ui, sans-serif',
-      });
-    }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -163,13 +240,7 @@ export function exportAsStandaloneHtml(
   <main class="content-container">
     ${renderedContent}
   </main>
-  <script>
-    if (typeof mermaid !== 'undefined') {
-      try {
-        mermaid.run({ querySelector: '.mermaid', suppressErrors: true });
-      } catch (e) {}
-    }
-  </script>
+${getMermaidScriptSnippet(theme)}
 </body>
 </html>`;
   downloadFile(filename, fullHtml, 'text/html;charset=utf-8');
@@ -189,7 +260,7 @@ export function printDocument(
 
   const renderedContent = mode === 'html'
     ? content
-    : renderMarkdown(content);
+    : renderMarkdown(content, theme);
 
   const trimmed = renderedContent.trim();
   let printHtml = '';
@@ -221,26 +292,6 @@ export function printDocument(
   <title>${title || 'Document'}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com?plugins=typography,forms,aspect-ratio"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.min.js"></script>
-  <script type="module">
-    try {
-      const { default: zenuml } = await import('https://cdn.jsdelivr.net/npm/@mermaid-js/mermaid-zenuml/dist/mermaid-zenuml.esm.min.mjs');
-      if (typeof mermaid !== 'undefined' && zenuml) {
-        await mermaid.registerExternalDiagrams([zenuml]);
-        mermaid.run({ querySelector: '.mermaid', suppressErrors: true });
-      }
-    } catch (e) {}
-  </script>
-  <script>
-    if (typeof mermaid !== 'undefined') {
-      mermaid.initialize({
-        startOnLoad: true,
-        theme: 'default',
-        securityLevel: 'loose',
-        fontFamily: 'Inter, system-ui, sans-serif',
-      });
-    }
-  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -294,13 +345,7 @@ export function printDocument(
   <div class="print-body">
     ${renderedContent}
   </div>
-  <script>
-    if (typeof mermaid !== 'undefined') {
-      try {
-        mermaid.run({ querySelector: '.mermaid', suppressErrors: true });
-      } catch (e) {}
-    }
-  </script>
+${getMermaidScriptSnippet('light')}
 </body>
 </html>`;
   }
