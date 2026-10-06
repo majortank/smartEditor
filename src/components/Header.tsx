@@ -13,7 +13,8 @@ import {
   Sparkles,
   Sun,
   Moon,
-  ArrowRightLeft
+  ArrowRightLeft,
+  Share2
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { EditorMode, ViewMode, Theme } from '../types';
@@ -36,6 +37,7 @@ interface HeaderProps {
   onExportSnippet?: () => void;
   onPrint: () => void;
   onCopyContent: () => void;
+  onOpenShare?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -56,6 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
   onExportSnippet,
   onPrint,
   onCopyContent,
+  onOpenShare,
 }) => {
   const [copied, setCopied] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
@@ -200,6 +203,21 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <Printer size={14} />
         </button>
+
+        {/* Social Share Button */}
+        {onOpenShare && (
+          <button
+            onClick={onOpenShare}
+            title="Share Marka Studio (100% Free)"
+            className="px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-sky-500/10 via-indigo-500/10 to-violet-500/10 hover:from-sky-500/20 hover:to-violet-500/20 border border-sky-500/30 text-sky-700 dark:text-sky-300 font-semibold text-xs flex items-center space-x-1.5 transition active:scale-95 shadow-sm"
+          >
+            <Share2 size={13} className="text-sky-500" />
+            <span className="hidden sm:inline">Share</span>
+            <span className="text-[9px] font-black uppercase tracking-wider px-1 py-0.5 rounded bg-emerald-500 text-slate-950 leading-none">
+              Free
+            </span>
+          </button>
+        )}
 
         {/* Export Dropdown */}
         <div className="relative">

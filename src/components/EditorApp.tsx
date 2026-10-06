@@ -18,6 +18,7 @@ import {
   isHtmlContent 
 } from '../utils/converter';
 import { Sparkles, ArrowRightLeft, X } from 'lucide-react';
+import { ShareModal } from './ShareModal';
 
 const STORAGE_KEY = 'marka_documents_v1';
 const LEGACY_STORAGE_KEY = 'smart_editor_documents_v1';
@@ -74,6 +75,7 @@ export function EditorApp() {
   const [lastSavedAt, setLastSavedAt] = useState<number>(Date.now());
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [conversionPrompt, setConversionPrompt] = useState<{ targetMode: EditorMode } | null>(null);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const editorPaneRef = useRef<EditorPaneRef>(null);
 
   useEffect(() => {
@@ -429,6 +431,7 @@ export function EditorApp() {
         onExportSnippet={handleExportSnippet}
         onPrint={handlePrint}
         onCopyContent={handleCopyContent}
+        onOpenShare={() => setIsShareModalOpen(true)}
       />
 
       {/* Formatting Toolbar */}
@@ -471,6 +474,12 @@ export function EditorApp() {
       <StatsFooter
         stats={stats}
         lastSavedAt={lastSavedAt}
+      />
+
+      {/* Social Share Modal */}
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
       />
 
     </div>
